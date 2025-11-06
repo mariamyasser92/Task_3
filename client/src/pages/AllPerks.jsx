@@ -30,6 +30,22 @@ export default function AllPerks() {
 
 */
 
+  // Initial load on mount
+  useEffect(() => {
+    loadAllPerks()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // Auto-search (debounced) when searchQuery or merchantFilter change
+  useEffect(() => {
+    const tid = setTimeout(() => {
+      loadAllPerks()
+    }, 500) // 500ms debounce
+
+    return () => clearTimeout(tid)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchQuery, merchantFilter])
+
   
   useEffect(() => {
     // Extract all merchant names from perks array
@@ -136,7 +152,8 @@ export default function AllPerks() {
                 type="text"
                 className="input"
                 placeholder="Enter perk name..."
-                
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
               />
               <p className="text-xs text-zinc-500 mt-1">
                 Auto-searches as you type, or press Enter / click Search
@@ -151,7 +168,8 @@ export default function AllPerks() {
               </label>
               <select
                 className="input"
-                
+                value={merchantFilter}
+                onChange={e => setMerchantFilter(e.target.value)}
               >
                 <option value="">All Merchants</option>
                 
@@ -217,7 +235,7 @@ export default function AllPerks() {
           
           <Link
             key={perk._id}
-           
+            to={`/perks/${perk._id}`}
             className="card hover:shadow-lg transition-shadow cursor-pointer"
           >
             {/* Perk Title */}
